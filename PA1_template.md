@@ -1,14 +1,10 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
 Load and process the data.
 
-```{r}
+
+```r
 activityData<-read.table("activity.csv",sep=",", header=TRUE);
 activityData$date<-as.Date(activityData$date);
 ```
@@ -17,43 +13,72 @@ activityData$date<-as.Date(activityData$date);
 
 Ingore the missing values in the dataset and calculate the total number of steps taken per day.
 
-```{r}
+
+```r
 rmActivity<-na.omit(activityData);
 perDay<-aggregate(rmActivity[,1],list(rmActivity$date),sum);
 hist(perDay$x,main="Histogram of Total Numbers of Steps Taken Per Day",xlab="Total Numbers of Steps Taken Per Day",col="blue");
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
 Calucatate the mean and median of the total number of steps taken per day.
 
-```{r}
+
+```r
 mean(perDay$x);
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(perDay$x);
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 perInterval<-aggregate(rmActivity[,1],list(rmActivity$interval),mean);
 plot(x=perInterval$Group.1,y=perInterval$x,type="l",xlab="Interval",main="Daily Activity Pattern",ylab="Number Of Steps");
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
 Calculate which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps
 
-```{r}
+
+```r
 perInterval[perInterval$x==max(perInterval$x),]$Group.1;
+```
+
+```
+## [1] 835
 ```
 
 ## Imputing missing values
 
 Calculate the total number of missing values in the dataset.
 
-```{r}
+
+```r
 nrow(activityData) - nrow(rmActivity);
+```
+
+```
+## [1] 2304
 ```
 
 Create a new dataset with the missing data filled in by using the mean for the 5-minutes interval to replace missing values in the dataset. 
 
-```{r}
+
+```r
 activityMiss<-activityData[!complete.cases(activityData),]
 for (i in 1:nrow(activityMiss)) {
   activityMiss[i,]$steps<-perInterval[perInterval$Group.1==activityMiss[i,]$interval,]$x;
@@ -63,16 +88,31 @@ fixActivity<-rbind(rmActivity,activityMiss);
 
 Calculate the total number of steps taken per day using the modified dataset.
 
-```{r}
+
+```r
 perDayFix<-aggregate(fixActivity[,1],list(fixActivity$date),sum);
 hist(perDayFix$x,main="Histogram of Total Numbers of Steps Taken Per Day",xlab="Total Numbers of Steps Taken Per Day",col="blue");
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
 Calucatate the mean and median of the total number of steps taken per day using the modified dataset.
 
-```{r}
+
+```r
 mean(perDayFix$x);
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(perDayFix$x);
+```
+
+```
+## [1] 10766.19
 ```
 
 The mean of the modified dataset is the same as that of the dataset with missing values removed.  The median of the modified dataset is slightly higher than that of the dataset with missing values remvoed. 
@@ -81,7 +121,8 @@ The mean of the modified dataset is the same as that of the dataset with missing
 
 Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 weekf<-factor(c("weekday","weekend"));
 weekendDays<-c("Saturday","Sunday");
 fixActivity$weekdayI<-rep(weekf[1],nrow(fixActivity));
@@ -99,8 +140,8 @@ library(ggplot2);
 ggplot(perIntervalTotal, aes(x=Group.1, y=x)) + geom_line(color="blue") + facet_wrap(~ weekdayI, nrow=2, ncol=1) + labs(x="Interval", y="Number of steps", title="Average Number of Steps Taken On Weekday or Weekend") + theme_bw();
 ```
 
-```{r}
-```
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
 
-```{r}
-```
+
+
+
